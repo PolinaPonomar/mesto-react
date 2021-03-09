@@ -1,21 +1,25 @@
 import {useState,useEffect} from 'react';
 import {api} from '../utils/api';
+import Card from './Card';
 
 function Main(props) {
     const [userAvatar,setUserAvatar] = useState('#');
     const [userName,setUserName] = useState('');
     const [userDescription,setUserDescription] = useState('');
+    const [cards,setCards] = useState([]);
 
     useEffect( () => {
-        api.getUserInfo()
-            .then((dataUserInfo) => {
+        Promise.all([api.getUserInfo(), api.getInitialCards()])
+            .then(([dataUserInfo, dataCards])=>{
                 setUserAvatar(dataUserInfo.avatar);
                 setUserName(dataUserInfo.name);
                 setUserDescription(dataUserInfo.about);
+
+                setCards(dataCards);
             })
             .catch((err) => {
                 console.log(err);
-                })
+            })
     }, [] )
 
     return (
@@ -37,7 +41,11 @@ function Main(props) {
             </section>
 
             <section className="cards">
-        
+                {
+                    cards.map(item =>
+                        <Card card={item}/>
+                    )
+                }
             </section>
 
         </main>

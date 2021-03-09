@@ -1,4 +1,4 @@
-import {useState,useEffect} from 'react';
+import {useState} from 'react';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
@@ -56,20 +56,6 @@ function App() {
             <PopupWithForm name="confirm" title="Вы уверены?"/>
 
             <ImagePopup/>
-
-            <template id="card-template">
-                <article className="card">
-                    <img className="card__photo" src="#" alt="описание фотографии"/>
-                    <div className="card__photo-info">
-                        <h2 className="card__text">подпись к фото</h2>
-                        <div className="card__like-container">
-                            <button type="button" aria-label="like" className="card__like-button"></button>
-                            <p className="card__likes-number">0</p>
-                        </div>
-                    </div>
-                    <button type="button" aria-label="delete" className="card__delete-button"></button>
-                </article>
-            </template>
 
         </div>
     );
