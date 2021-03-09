@@ -8,6 +8,7 @@ function Main(props) {
     const [userDescription,setUserDescription] = useState('');
     const [cards,setCards] = useState([]);
 
+    // Эффект, вызываемый (всего 1 раз) при монтировании компонента
     useEffect( () => {
         Promise.all([api.getUserInfo(), api.getInitialCards()])
             .then(([dataUserInfo, dataCards]) => {
