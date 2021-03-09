@@ -1,6 +1,6 @@
 function Card(props) {
-    function handleClick() {
-        props.onCardClick(props.card);
+    function handleClick() { //При клике на карточку в конечном счете сработает handleCardClick из компонента App
+        props.onCardClick(props.card); // (handleCardClick "проброшен" пропсом onCardClick из App через Main сюда)
     }  
 
     return (

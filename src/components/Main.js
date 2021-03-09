@@ -10,11 +10,12 @@ function Main(props) {
 
     useEffect( () => {
         Promise.all([api.getUserInfo(), api.getInitialCards()])
-            .then(([dataUserInfo, dataCards])=>{
+            .then(([dataUserInfo, dataCards]) => {
+                // Добавление информации о пользователе с сервера на страницу:
                 setUserAvatar(dataUserInfo.avatar);
                 setUserName(dataUserInfo.name);
                 setUserDescription(dataUserInfo.about);
-
+                // Добавление существующих на сервере карточек на страницу:
                 setCards(dataCards);
             })
             .catch((err) => {
@@ -43,7 +44,7 @@ function Main(props) {
             <section className="cards">
                 {
                     cards.map(item =>
-                        <Card card={item} key={item._id} onCardClick={props.onCardClick}/>
+                        <Card card={item} key={item._id} onCardClick={props.onCardClick}/> //Обязательно передается key, т.к. каждая карточка - элемент списка карточек
                     )
                 }
             </section>
