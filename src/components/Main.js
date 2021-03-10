@@ -44,8 +44,9 @@ function Main(props) {
 
             <section className="cards">
                 {
-                    cards.map(item =>
+                    cards.map(item => ( // jsx оборачиваем в скобки, чтобы избежать проблем с автоматической вставкой точек с запятой
                         <Card card={item} key={item._id} onCardClick={props.onCardClick}/> //Обязательно передается key, т.к. каждая карточка - элемент списка карточек
+                    )
                     )
                 }
             </section>
