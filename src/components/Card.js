@@ -18,6 +18,12 @@ function Card(props) {
 
     function handleClick() { //При клике на карточку в конечном счете сработает handleCardClick из компонента App
         props.onCardClick(props.card); // (handleCardClick "проброшен" пропсом onCardClick из App через Main сюда)
+    }
+    function handleLikeClick() {
+        props.onCardLike(props.card);
+    }
+    function handleDeleteClick() {
+        props.onCardDelete(props.card);
     }  
 
     return (
@@ -26,11 +32,11 @@ function Card(props) {
             <div className="card__photo-info">
                 <h2 className="card__text">{props.card.name}</h2>
                 <div className="card__like-container">
-                    <button type="button" aria-label="like" className={cardLikeButtonClassName}></button>
+                    <button type="button" aria-label="like" className={cardLikeButtonClassName} onClick={handleLikeClick}></button>
                     <p className="card__likes-number">{props.card.likes.length}</p>
                 </div>
             </div>
-            <button type="button" aria-label="delete" className={cardDeleteButtonClassName}></button>
+            <button type="button" aria-label="delete" className={cardDeleteButtonClassName} onClick={handleDeleteClick}></button>
         </article>
     );
 }
