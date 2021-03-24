@@ -27,13 +27,13 @@ class Api {
         .then(this._onError)
     }
 
-    renewUserInfo (inputs) {
+    setUserInfo (inputs) {
         return fetch(`${this._url}users/me`, {
             method: 'PATCH',
             headers: this.headers,
             body: JSON.stringify({
                 name: inputs.name,
-                about: inputs.description
+                about: inputs.about
             })
         })
         .then(this._onError)

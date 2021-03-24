@@ -1,11 +1,12 @@
 import React from 'react';
-import {useState,useEffect} from 'react';
-import {api} from '../utils/api';
-import {CurrentUserContext} from '../contexts/CurrentUserContext';
+import { useState,useEffect } from 'react';
+import { api } from '../utils/api';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import Card from './Card';
 
 function Main(props) {
-    const currentUser = React.useContext(CurrentUserContext); // подписка на контекст информации о юзере
+    // подписка на контекст информации о юзере
+    const currentUser = React.useContext(CurrentUserContext);
     const [cards,setCards] = useState([]);
 
     function handleCardLike (card) {
@@ -17,7 +18,7 @@ function Main(props) {
                     // в cards записываем новый массив, который получен так:
                     // в текущем массиве перебираем карточки и когда id одной из карточек совпадает с id нашей карточки,
                     // менем ее на новую (с лайком)
-                    setCards((state) => state.map((c) => c._id === card._id ? newCard : c)); // state - это текущий стейт (т.е необновленный cards)
+                    setCards((state) => state.map((item) => item._id === card._id ? newCard : item)); // state - это текущий стейт (т.е необновленный cards)
                 })
                 .catch((err) => {
                     console.log(err);
@@ -26,21 +27,21 @@ function Main(props) {
         } else {
             api.deleteLike(card._id)
                 .then((newCard) => { //аналогично
-                    setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+                    setCards((state) => state.map((item) => item._id === card._id ? newCard : item));
                 })
                 .catch((err) => {
                     console.log(err);
                 })
         }
     }
-    
+
     function handleCardDelete (card) {
         // Определяем, являемся ли мы владельцем карточки
         const isOwn = card.owner._id === currentUser._id;
         if (isOwn) {
             api.deleteCard(card._id)
                 .then((answer) => {
-                    setCards((state) => state.filter((c) => c._id !== card._id));
+                    setCards((state) => state.filter((item) => item._id !== card._id));
                 })
                 .catch((err) => {
                     console.log(err);
