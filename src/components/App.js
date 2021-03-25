@@ -6,6 +6,7 @@ import Main from './Main';
 import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
 import EditProfilePopup from './EditProfilePopup';
+import EditAvatarPopup from './EditAvatarPopup';
 import ImagePopup from './ImagePopup';
 
 function App() {
@@ -18,8 +19,19 @@ function App() {
 
     function handleUpdateUser(inputs) {
         api.setUserInfo(inputs)
-            .then((newUserInfo) => {
-                setCurrentUser(newUserInfo);
+            .then((updateUser) => {
+                setCurrentUser(updateUser);
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+        closeAllPopups();
+    }
+
+    function handleUpdateAvatar(inputAvatar) {
+        api.changeAvatar(inputAvatar)
+            .then((updateUser) => {
+                setCurrentUser(updateUser);
             })
             .catch((err) => {
                 console.log(err);
@@ -69,12 +81,9 @@ function App() {
                 <Main onEditAvatar={handleEditAvatarClick} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick} />
                 <Footer/>
 
-                <PopupWithForm name="avatar" title="Обновить аватар" isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}>
-                    <input id="avatar-link-input" type="url" className="popup__form-item" name="link" required placeholder="Ссылка на фото"/>
-                    <span id="avatar-link-input-error" className="popup__form-item-error"></span>
-                </PopupWithForm>
+                <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onUpdateAvatar={handleUpdateAvatar} onClose={closeAllPopups}/>
 
-                <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} /> 
+                <EditProfilePopup isOpen={isEditProfilePopupOpen} onUpdateUser={handleUpdateUser} onClose={closeAllPopups}/> 
 
                 <PopupWithForm name="cards" title="Новое место" isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}>
                     <input id="place-name-input" type="text" className="popup__form-item popup__form-item_value_place-name" name="title" minLength={2} maxLength={30} required placeholder="Название"/>

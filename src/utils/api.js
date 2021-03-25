@@ -76,12 +76,12 @@ class Api {
         .then(this._onError)
     }
 
-    changeAvatar (inputAvatar) {
+    changeAvatar (input) {
         return fetch(`${this._url}users/me/avatar`, {
             method: 'PATCH',
             headers: this.headers,
             body: JSON.stringify({
-                avatar: inputAvatar
+                avatar: input.avatar
             })
         })
         .then(this._onError)

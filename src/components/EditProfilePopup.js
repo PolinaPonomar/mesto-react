@@ -1,11 +1,10 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import PopupWithForm from './PopupWithForm';
 
 function EditProfilePopup(props) {
     // подписка на контекст информации о юзере
-    const currentUser = React.useContext(CurrentUserContext);
+    const currentUser = useContext(CurrentUserContext);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
 
@@ -35,7 +34,7 @@ function EditProfilePopup(props) {
     }, [currentUser]);
 
     return (
-        <PopupWithForm name="profile" title="Редактировать профиль" onSubmit={handleSubmit} isOpen={props.isOpen} onClose={props.onClose}>
+        <PopupWithForm name="profile" title="Редактировать профиль" isOpen={props.isOpen} onSubmit={handleSubmit} onClose={props.onClose}>
             <input id="name-input" type="text" value={name} onChange={handleChangeName} className="popup__form-item popup__form-item_value_name" name="name" minLength={2} maxLength={40} required placeholder="Имя"/>
             <span id="name-input-error" className="popup__form-item-error"></span>
             <input id="description-input" type="text" value={description} onChange={handleChangeDescription} className="popup__form-item popup__form-item_value_description" name="description"  minLength={2} maxLength={200} required placeholder="О себе"/>

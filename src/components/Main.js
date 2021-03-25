@@ -1,12 +1,11 @@
-import React from 'react';
-import { useState,useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { api } from '../utils/api';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import Card from './Card';
 
 function Main(props) {
     // подписка на контекст информации о юзере
-    const currentUser = React.useContext(CurrentUserContext);
+    const currentUser = useContext(CurrentUserContext);
     const [cards,setCards] = useState([]);
 
     function handleCardLike (card) {
