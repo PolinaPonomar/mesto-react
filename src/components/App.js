@@ -5,19 +5,54 @@ import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
-import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
+import EditProfilePopup from './EditProfilePopup';
+import AddPlacePopup from './AddPlacePopup';
 import ImagePopup from './ImagePopup';
 
 function App() {
     const [currentUser, setCurrentUser] = useState({});
-
     const [isEditAvatarPopupOpen,setIsEditAvatarPopupOpen] = useState(false);
     const [isEditProfilePopupOpen,setIsEditProfilePopupOpen] = useState(false);
     const [isAddPlacePopupOpen,setIsAddPlacePopupOpen] = useState(false);
     const [selectedCard,setSelectedCard] = useState({isOpen: false, link: '', name: ''});
+    const [cards,setCards] = useState([]);
 
-    function handleUpdateUser(inputs) {
+    // Эффект, вызываемый при монтировании компонента
+    useEffect( () => {
+        Promise.all([api.getUserInfo(), api.getInitialCards()])
+            .then(([dataUserInfo, dataCards]) => {
+                // Добавление информации о пользователе с сервера на страницу:
+                setCurrentUser(dataUserInfo); // поля объекта: avatar, name, about, _id и cohort
+                // Добавление существующих на сервере карточек на страницу:
+                setCards(dataCards);
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+    }, [] )
+
+    const handleEditAvatarClick = () => {
+        setIsEditAvatarPopupOpen(true);
+    };
+    const handleEditProfileClick = () => {
+        setIsEditProfilePopupOpen(true);
+    };
+    const handleAddPlaceClick = () => {
+        setIsAddPlacePopupOpen(true);
+    };
+    const handleCardClick = (card) => {
+        setSelectedCard({isOpen: true, link: card.link,name: card.name });
+    };
+    const closeAllPopups = () => {
+        setIsEditAvatarPopupOpen(false);
+        setIsEditProfilePopupOpen(false);
+        setIsAddPlacePopupOpen(false);
+
+        setSelectedCard({isOpen: false, link: '',name: ''});
+    }
+
+    function handleUpdateUser (inputs) {
         api.setUserInfo(inputs)
             .then((updateUser) => {
                 setCurrentUser(updateUser);
@@ -28,7 +63,7 @@ function App() {
         closeAllPopups();
     }
 
-    function handleUpdateAvatar(inputAvatar) {
+    function handleUpdateAvatar (inputAvatar) {
         api.changeAvatar(inputAvatar)
             .then((updateUser) => {
                 setCurrentUser(updateUser);
@@ -39,58 +74,73 @@ function App() {
         closeAllPopups();
     }
 
-    // Эффект, вызываемый при монтировании компонента
-    useEffect( () => {
-        api.getUserInfo()
-            .then((dataUserInfo) => {
-                // Добавление информации о пользователе с сервера на страницу:
-                setCurrentUser(dataUserInfo); // поля объекта: avatar, name, about, _id и cohort
+    function handleCardLike (card) {
+        // Проверяем, есть ли уже лайк на этой карточке
+        const isLiked = card.likes.some(liker => liker._id === currentUser._id);
+        if (!isLiked) {
+            api.putLike(card._id)
+                .then((newCard) => { // получили данные лайкнутой карточки (лайк уже проставлен)
+                    // в cards записываем новый массив, который получен так:
+                    // в текущем массиве перебираем карточки и когда id одной из карточек совпадает с id нашей карточки,
+                    // менем ее на новую (с лайком)
+                    setCards((state) => state.map((item) => item._id === card._id ? newCard : item)); // state - это текущий стейт (т.е необновленный cards)
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+
+        } else {
+            api.deleteLike(card._id)
+                .then((newCard) => { //аналогично
+                    setCards((state) => state.map((item) => item._id === card._id ? newCard : item));
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+        }
+    }
+
+    function handleCardDelete (card) {
+        // Определяем, являемся ли мы владельцем карточки
+        const isOwn = card.owner._id === currentUser._id;
+        if (isOwn) {
+            api.deleteCard(card._id)
+                .then((answer) => {
+                    setCards((state) => state.filter((item) => item._id !== card._id));
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+        }
+    }
+
+    function handleAddPlaceSubmit (card) {
+        api.postNewCard(card)
+            .then((newCard) => {
+                setCards([newCard, ...cards]);
             })
             .catch((err) => {
                 console.log(err);
             })
-    }, [] )
-    
-    
-    const handleEditAvatarClick = () => {
-        setIsEditAvatarPopupOpen(true);
-    };
-    const handleEditProfileClick = () => {
-        setIsEditProfilePopupOpen(true);
-    };
-    const handleAddPlaceClick = () => {
-        setIsAddPlacePopupOpen(true);
-    };
-
-    const handleCardClick = (card) => {
-        setSelectedCard({isOpen: true, link: card.link,name: card.name });
-    };
-
-    const closeAllPopups = () => {
-        setIsEditAvatarPopupOpen(false);
-        setIsEditProfilePopupOpen(false);
-        setIsAddPlacePopupOpen(false);
-
-        setSelectedCard({isOpen: false, link: '',name: ''});
+        closeAllPopups();
     }
 
     return (
         < CurrentUserContext.Provider value={currentUser}>
             <div className="page">
                 <Header/>
-                <Main onEditAvatar={handleEditAvatarClick} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick} />
+                <Main onEditAvatar={handleEditAvatarClick}
+                      onEditProfile={handleEditProfileClick}
+                      onAddPlace={handleAddPlaceClick} 
+                      onCardClick={handleCardClick}
+                      cards={cards}
+                      onCardLike={handleCardLike}
+                      onCardDelete={handleCardDelete}/>
                 <Footer/>
 
                 <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onUpdateAvatar={handleUpdateAvatar} onClose={closeAllPopups}/>
-
-                <EditProfilePopup isOpen={isEditProfilePopupOpen} onUpdateUser={handleUpdateUser} onClose={closeAllPopups}/> 
-
-                <PopupWithForm name="cards" title="Новое место" isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}>
-                    <input id="place-name-input" type="text" className="popup__form-item popup__form-item_value_place-name" name="title" minLength={2} maxLength={30} required placeholder="Название"/>
-                    <span id="place-name-input-error" className="popup__form-item-error"></span>
-                    <input id="link-input" type="url" className="popup__form-item popup__form-item_value_link" name="link" required placeholder="Ссылка на картинку"/>
-                    <span id="link-input-error" className="popup__form-item-error"></span>
-                </PopupWithForm>
+                <EditProfilePopup isOpen={isEditProfilePopupOpen} onUpdateUser={handleUpdateUser} onClose={closeAllPopups}/>
+                <AddPlacePopup  isOpen={isAddPlacePopupOpen} onAddPlace={handleAddPlaceSubmit} onClose={closeAllPopups}/>
 
                 <PopupWithForm name="confirm" title="Вы уверены?"/>
 

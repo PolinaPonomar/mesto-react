@@ -46,7 +46,6 @@ class Api {
             body: JSON.stringify({
                 name: cardData.name,
                 link: cardData.link,
-                alt: cardData.alt
             })
         })
         .then(this._onError)
