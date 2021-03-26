@@ -49,29 +49,29 @@ function App() {
         setIsEditProfilePopupOpen(false);
         setIsAddPlacePopupOpen(false);
 
-        setSelectedCard({isOpen: false, link: '',name: ''});
+        setSelectedCard({isOpen: false});
     }
 
     function handleUpdateUser (inputs) {
         api.setUserInfo(inputs)
             .then((updateUser) => {
                 setCurrentUser(updateUser);
+                closeAllPopups();
             })
             .catch((err) => {
                 console.log(err);
             })
-        closeAllPopups();
     }
 
     function handleUpdateAvatar (inputAvatar) {
         api.changeAvatar(inputAvatar)
             .then((updateUser) => {
                 setCurrentUser(updateUser);
+                closeAllPopups();
             })
             .catch((err) => {
                 console.log(err);
             })
-        closeAllPopups();
     }
 
     function handleCardLike (card) {
@@ -118,11 +118,11 @@ function App() {
         api.postNewCard(card)
             .then((newCard) => {
                 setCards([newCard, ...cards]);
+                closeAllPopups();
             })
             .catch((err) => {
                 console.log(err);
             })
-        closeAllPopups();
     }
 
     return (
